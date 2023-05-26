@@ -179,7 +179,7 @@ user's information.
     ```json
     {
       "user": {
-        "id": 1,
+        "id": 1
         "firstName": "John",
         "lastName": "Smith",
         "email": "john.smith@gmail.com",
