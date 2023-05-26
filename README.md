@@ -1,6 +1,6 @@
 ## Database Schema Design
 
-`<insert database schema design here>`
+![db](![Airbnb Project](https://github.com/JustAMan22/AirbnbProject/assets/69025463/60549753-6eaf-47e2-b285-d7f31171c348)
 
 ## API Documentation
 
