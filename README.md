@@ -285,7 +285,7 @@ Returns all the spots owned (created) by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: /spots/user
+  * URL: /user/spots
   * Body: none
 
 * Successful Response
@@ -390,7 +390,7 @@ Creates and returns a new spot.
 * Require Authentication: true
 * Request
   * Method: POST
-  * URL: /spots/create
+  * URL: /spots
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -463,8 +463,8 @@ Create and return a new image for a spot specified by id.
 * Require Authentication: true
 * Require proper authorization: Spot must belong to the current user
 * Request
-  * Method: PATCH
-  * URL: /user/spots/:spotId
+  * Method: POST
+  * URL: /user/spots/:spotId/images
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -820,8 +820,8 @@ Create and return a new image for a review specified by id.
 * Require Authentication: true
 * Require proper authorization: Review must belong to the current user
 * Request
-  * Method: PATCH
-  * URL: /user/reviews/:reviewId
+  * Method: POST
+  * URL: /user/reviews/:reviewId/images
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1314,8 +1314,8 @@ Delete an existing image for a Spot.
 * Require Authentication: true
 * Require proper authorization: Spot must belong to the current user
 * Request
-  * Method: PATCH
-  * URL: /user/spots/:spotId
+  * Method: DELETE
+  * URL: /user/spots/:spotId/images/:imageId
   * Body: none
 
 * Successful Response
@@ -1349,8 +1349,8 @@ Delete an existing image for a Review.
 * Require Authentication: true
 * Require proper authorization: Review must belong to the current user
 * Request
-  * Method: PATCH
-  * URL: /user/reviews/:reviewId
+  * Method: DELETE
+  * URL: /user/reviews/:reviewId/images/:imageId
   * Body: none
 
 * Successful Response
@@ -1384,7 +1384,7 @@ Return spots filtered by query parameters.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: /spots/parameters
+  * URL: /spots
   * Query Parameters
     * page: integer, minimum: 1, maximum: 10, default: 1
     * size: integer, minimum: 1, maximum: 20, default: 20
