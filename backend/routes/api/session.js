@@ -22,7 +22,7 @@ const validateLogin = [
 ];
 
 // Log in
-router.post("/", validateLogin, async (req, res, next) => {
+router.post("/login", validateLogin, async (req, res, next) => {
   const { credential, password } = req.body;
 
   const user = await User.unscoped().findOne({
@@ -58,13 +58,13 @@ router.post("/", validateLogin, async (req, res, next) => {
 });
 
 // Log out
-router.delete("/", (_req, res) => {
+router.delete("/logout", (_req, res) => {
   res.clearCookie("token");
   return res.json({ message: "success" });
 });
 
 // Restore session user
-router.get("/", (req, res) => {
+router.get("/users/:userId", (req, res) => {
   const { user } = req;
   if (user) {
     const safeUser = {
