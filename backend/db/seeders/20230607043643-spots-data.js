@@ -8,10 +8,15 @@ if (process.env.NODE_ENV === "production") {
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     options.tableName = "Spots";
+
+    const users = await queryInterface.sequelize.query("SELECT id FROM Users;");
+    const userIds = users[0].map((user) => user.id);
+
     return queryInterface.bulkInsert(
       options,
       [
         {
+          ownerId: userIds[0],
           address: "3900 Dog Rd Ln",
           city: "Chicago",
           state: "Illinois",
@@ -23,6 +28,7 @@ module.exports = {
           price: 1299.99,
         },
         {
+          ownerId: userIds[1],
           address: "4200 Cat Ln Blvd",
           city: "Orlando",
           state: "Florida",
@@ -34,6 +40,7 @@ module.exports = {
           price: 10999.99,
         },
         {
+          ownerId: userIds[2],
           address: "6900 Orangutan Ct",
           city: "Sumtara",
           state: "Islands",

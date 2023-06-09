@@ -47,7 +47,7 @@ module.exports = {
           notEmpty: true,
         },
         name: {
-          type: Sequelize.STRING,
+          type: Sequelize.STRING(50),
           allowNull: false,
           notEmpty: true,
           unique: true,
