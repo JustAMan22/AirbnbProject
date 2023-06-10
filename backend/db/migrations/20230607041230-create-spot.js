@@ -1,5 +1,7 @@
 "use strict";
 
+const { DECIMAL } = require("sequelize");
+
 let options = {};
 if (process.env.NODE_ENV === "production") {
   options.schema = process.env.SCHEMA; // define your schema in options object
@@ -15,6 +17,13 @@ module.exports = {
           autoIncrement: true,
           primaryKey: true,
           type: Sequelize.INTEGER,
+        },
+        ownerId: {
+          type: Sequelize.INTEGER,
+          references: {
+            model: "Users",
+            key: "id",
+          },
         },
         address: {
           type: Sequelize.STRING,
@@ -62,12 +71,8 @@ module.exports = {
           allowNull: false,
           notEmpty: true,
         },
-        ownerId: {
-          type: Sequelize.INTEGER,
-          references: {
-            model: "Users",
-            key: "id",
-          },
+        avgRating: {
+          type: Sequelize.DECIMAL,
         },
         createdAt: {
           allowNull: false,
@@ -85,6 +90,6 @@ module.exports = {
   },
   down: async (queryInterface, Sequelize) => {
     options.tableName = "Spots";
-    return queryInterface.dropTable("Spots");
+    return queryInterface.dropTable(options);
   },
 };

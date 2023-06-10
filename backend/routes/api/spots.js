@@ -1,3 +1,4 @@
+const { Router } = require("express");
 const express = require("express");
 
 const { User } = require("../../db/models");
@@ -15,7 +16,8 @@ router.get("/", async (req, res, next) => {
 
 //Create spot
 router.post("/", async (req, res, next) => {
-  const { address, city, state, country, lat, lng, name, description, price } = req.body;
+  const { address, city, state, country, lat, lng, name, description, price } =
+    req.body;
 
   const spot = await Spot.create({
     address,
@@ -42,7 +44,7 @@ router.post("/", async (req, res, next) => {
   };
 
   return res.json(safeSpot);
-})
+});
 
 //Get details of a spot from :spotId
 router.get("/:spotId", async (req, res, next) => {
@@ -52,7 +54,9 @@ router.get("/:spotId", async (req, res, next) => {
 
   if (spot) return res.json(spot);
   else return res.json({ message: "Spot couldn't be found" });
-
 });
+
+//Add an Image to a Spot based on the Spot's id
+router.post("/spots/:spotId/images", async (req, res, next) => {});
 
 module.exports = router;

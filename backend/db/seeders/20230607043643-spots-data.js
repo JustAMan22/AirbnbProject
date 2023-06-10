@@ -26,6 +26,7 @@ module.exports = {
           name: "Wooftastic Mansion",
           description: "A wonderful reTREAT for all your doggy needs!",
           price: 1299.99,
+          avgRating: 4.7,
         },
         {
           ownerId: userIds[1],
@@ -38,6 +39,7 @@ module.exports = {
           name: "Kitten Flats",
           description: "Cats live here",
           price: 10999.99,
+          avgRating: 4.8,
         },
         {
           ownerId: userIds[2],
@@ -50,6 +52,7 @@ module.exports = {
           name: "Orangutan Central",
           description: "🦧",
           price: 99999.99,
+          avgRating: 5,
         },
       ],
       {}

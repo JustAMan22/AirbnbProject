@@ -13,10 +13,23 @@ module.exports = (sequelize, DataTypes) => {
       Spot.belongsTo(models.User, {
         foreignKey: "ownerId",
       });
+
+      Spot.hasMany(models.Booking, {
+        foreignKey: "spotId",
+      });
+
+      Spot.hasMany(models.Review, {
+        foreignKey: "spotId",
+      });
+
+      Spot.hasMany(models.SpotImage, {
+        foreignKey: "spotId",
+      });
     }
   }
   Spot.init(
     {
+      ownerId: DataTypes.INTEGER,
       address: {
         type: DataTypes.STRING,
         notEmpty: true,
@@ -74,7 +87,9 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
         allowNull: false,
       },
-      ownerId: DataTypes.INTEGER,
+      avgRating: {
+        type: DataTypes.DECIMAL,
+      },
     },
     {
       sequelize,
