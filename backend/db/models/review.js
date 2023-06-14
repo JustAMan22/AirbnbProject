@@ -19,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
 
       Review.hasMany(models.ReviewImage, {
         foreignKey: "reviewId",
+        onDelete: "CASCADE",
+        hooks: true,
       });
     }
   }
@@ -26,8 +28,13 @@ module.exports = (sequelize, DataTypes) => {
     {
       spotId: DataTypes.INTEGER,
       userId: DataTypes.INTEGER,
-      review: DataTypes.STRING,
-      stars: DataTypes.DECIMAL,
+      review: {
+        type: DataTypes.STRING,
+        notNull: true,
+      },
+      stars: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       sequelize,

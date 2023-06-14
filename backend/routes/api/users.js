@@ -4,6 +4,10 @@ const bcrypt = require("bcryptjs");
 const { setTokenCookie, requireAuth } = require("../../utils/auth");
 const { User } = require("../../db/models");
 const { Spot } = require("../../db/models");
+const { Review } = require("../../db/models");
+const { ReviewImage } = require("../../db/models");
+const { SpotImage } = require("../../db/models");
+const sequelize = require("sequelize");
 
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -13,16 +17,18 @@ const router = express.Router();
 const validateSignup = [
   check("email")
     .exists({ checkFalsy: true })
-    .isEmail()
     .withMessage("Please provide a valid email."),
   check("username")
     .exists({ checkFalsy: true })
-    .isLength({ min: 4 })
     .withMessage("Please provide a username with at least 4 characters."),
-  check("username").not().isEmail().withMessage("Username cannot be an email."),
+  check("firstName")
+    .exists({ checkFalsy: true })
+    .withMessage("First Name is required"),
+  check("lastName")
+    .exists({ checkFalsy: true })
+    .withMessage("Last Name is required"),
   check("password")
     .exists({ checkFalsy: true })
-    .isLength({ min: 6 })
     .withMessage("Password must be 6 characters or more."),
   handleValidationErrors,
 ];
@@ -55,16 +61,101 @@ router.post("/signup", validateSignup, async (req, res) => {
 });
 
 //Get all spots from current :userId
-router.get("/:userId/spots", async (req, res, next) => {
-  const userId = req.params.userId;
-
-  const spot = await Spot.findAll({
+router.get("/:userId/spots", requireAuth, async (req, res, next) => {
+  let userId = req.params.userId;
+  let user = req.user;
+  let spotResults = {};
+  const spots = await Spot.findAll({
     where: {
       ownerId: userId,
     },
+    include: [
+      {
+        model: Review,
+        attributes: [],
+      },
+    ],
+    attributes: [
+      "id",
+      "ownerId",
+      "address",
+      "city",
+      "state",
+      "country",
+      "lat",
+      "lng",
+      "name",
+      "description",
+      "price",
+      "createdAt",
+      "updatedAt",
+      [sequelize.fn("AVG", sequelize.col("stars")), "avgRating"],
+    ],
+    group: ["Spot.Id"],
   });
 
-  return res.json(spot);
+  for (const spot of spots) {
+    const previewImage = await SpotImage.findOne({
+      attributes: ["url"],
+      where: { spotId: spot.id, preview: true },
+    });
+    if (previewImage) {
+      spot.dataValues.previewImage = previewImage.dataValues.url;
+    }
+  }
+
+  spotResults.spots = spots;
+  if (parseInt(user.id) === parseInt(userId)) {
+    return res.status(200).json(spotResults);
+  } else return res.status(403).json({ message: "Forbidden!" });
+});
+
+//Get all reviews by userId
+router.get("/:userId/reviews", requireAuth, async (req, res, next) => {
+  let userId = req.params.userId;
+  const reviews = await Review.findAll({
+    where: {
+      userId: userId,
+    },
+    include: [
+      {
+        model: User,
+        attributes: ["id", "firstName", "lastName"],
+      },
+      {
+        model: Spot,
+        attributes: [
+          "id",
+          "ownerId",
+          "address",
+          "city",
+          "state",
+          "country",
+          "lat",
+          "lng",
+          "name",
+          "price",
+        ],
+      },
+      {
+        model: ReviewImage,
+        attributes: ["id", "url"],
+      },
+    ],
+  });
+
+  for (const review of reviews) {
+    const spot = review.Spot;
+    const previewImage = await SpotImage.findOne({
+      attributes: ["url"],
+      where: { spotId: spot.id, preview: true },
+    });
+    if (previewImage) {
+      spot.dataValues.previewImage = previewImage.url;
+    }
+  }
+
+  return res.status(200).json(reviews);
 });
 
 module.exports = router;

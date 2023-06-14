@@ -9,24 +9,21 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     options.tableName = "SpotImages";
 
-    const spots = await queryInterface.sequelize.query("SELECT id FROM Spots;");
-    const spotIds = spots[0].map((spot) => spot.id);
-
     return queryInterface.bulkInsert(
       options,
       [
         {
-          spotId: spotIds[0],
+          spotId: 1,
           url: "https://www.image.com/12",
           preview: true,
         },
         {
-          spotId: spotIds[1],
+          spotId: 2,
           url: "https://www.image.com/13",
-          preview: false,
+          preview: true,
         },
         {
-          spotId: spotIds[2],
+          spotId: 3,
           url: "https://www.image.com/14",
           preview: true,
         },

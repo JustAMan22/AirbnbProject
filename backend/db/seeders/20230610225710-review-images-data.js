@@ -9,24 +9,19 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     options.tableName = "ReviewImages";
 
-    const reviews = await queryInterface.sequelize.query(
-      "SELECT id FROM Reviews;"
-    );
-    const reviewIds = reviews[0].map((review) => review.id);
-
     return queryInterface.bulkInsert(
       options,
       [
         {
-          reviewId: reviewIds[0],
+          reviewId: 1,
           url: "https://www.image.com/1",
         },
         {
-          reviewId: reviewIds[1],
+          reviewId: 2,
           url: "https://www.image.com/2",
         },
         {
-          reviewId: reviewIds[2],
+          reviewId: 3,
           url: "https://www.image.com/3",
         },
       ],

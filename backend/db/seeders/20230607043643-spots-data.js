@@ -9,14 +9,11 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     options.tableName = "Spots";
 
-    const users = await queryInterface.sequelize.query("SELECT id FROM Users;");
-    const userIds = users[0].map((user) => user.id);
-
     return queryInterface.bulkInsert(
       options,
       [
         {
-          ownerId: userIds[0],
+          ownerId: 1,
           address: "3900 Dog Rd Ln",
           city: "Chicago",
           state: "Illinois",
@@ -26,10 +23,10 @@ module.exports = {
           name: "Wooftastic Mansion",
           description: "A wonderful reTREAT for all your doggy needs!",
           price: 1299.99,
-          avgRating: 4.7,
+          avgRating: 0,
         },
         {
-          ownerId: userIds[1],
+          ownerId: 2,
           address: "4200 Cat Ln Blvd",
           city: "Orlando",
           state: "Florida",
@@ -39,10 +36,10 @@ module.exports = {
           name: "Kitten Flats",
           description: "Cats live here",
           price: 10999.99,
-          avgRating: 4.8,
+          avgRating: 0,
         },
         {
-          ownerId: userIds[2],
+          ownerId: 3,
           address: "6900 Orangutan Ct",
           city: "Sumtara",
           state: "Islands",
@@ -52,7 +49,7 @@ module.exports = {
           name: "Orangutan Central",
           description: "🦧",
           price: 99999.99,
-          avgRating: 5,
+          avgRating: 0,
         },
       ],
       {}

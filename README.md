@@ -632,7 +632,7 @@ Returns all the reviews written by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: /users/:userId//reviews
+  * URL: /users/:userId/reviews
   * Body: none
 
 * Successful Response

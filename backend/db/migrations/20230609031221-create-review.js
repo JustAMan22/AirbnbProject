@@ -34,7 +34,7 @@ module.exports = {
           type: Sequelize.STRING,
         },
         stars: {
-          type: Sequelize.DECIMAL,
+          type: Sequelize.INTEGER,
         },
         createdAt: {
           allowNull: false,
