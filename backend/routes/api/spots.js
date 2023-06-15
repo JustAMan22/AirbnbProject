@@ -222,8 +222,13 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
         url: url,
         preview: preview,
       });
+      let outputSpotImage = {
+        id: spotImage.id,
+        url: spotImage.url,
+        preview: spotImage.preview,
+      };
       currentSpot.addSpotImage(spotImage);
-      return res.status(200).json(spotImage);
+      return res.status(200).json(outputSpotImage);
     } else return res.status(403).json({ message: "Forbidden!" });
   } else return res.status(404).json({ message: "Spot couldn't be found!" });
 });
