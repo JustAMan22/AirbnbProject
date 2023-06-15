@@ -8,6 +8,8 @@ const { Review } = require("../../db/models");
 const { ReviewImage } = require("../../db/models");
 const { SpotImage } = require("../../db/models");
 const { Booking } = require("../../db/models");
+
+const { restoreUser } = require("../../utils/auth");
 const sequelize = require("sequelize");
 
 const { check } = require("express-validator");
@@ -33,6 +35,24 @@ const validateSignup = [
     .withMessage("Password must be 6 characters or more."),
   handleValidationErrors,
 ];
+
+// Restore session user/get current user
+router.get("/:userId", (req, res) => {
+  const { user } = req;
+  if (user) {
+    const safeUser = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      username: user.username,
+    };
+    return res.json({
+      user: safeUser,
+    });
+  } else return res.json({ user: null });
+});
+
 
 // Sign up
 router.post("/signup", validateSignup, async (req, res) => {
