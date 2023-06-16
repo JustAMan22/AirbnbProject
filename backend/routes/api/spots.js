@@ -137,24 +137,24 @@ router.get("/", validateQuery, async (req, res, next) => {
   const spots = await Spot.findAll({
     where,
     attributes: [
-      'id',
-      'ownerId',
-      'address',
-      'city',
-      'state',
-      'country',
-      'lat',
-      'lng',
-      'name',
-      'description',
-      'price',
-      'createdAt',
-      'updatedAt',
+      "id",
+      "ownerId",
+      "address",
+      "city",
+      "state",
+      "country",
+      "lat",
+      "lng",
+      "name",
+      "description",
+      "price",
+      "createdAt",
+      "updatedAt,
       [
         sequelize.literal(
-          '(SELECT AVG(stars) FROM "Reviews" WHERE "Reviews"."spotId" = "Spot"."id")'
+          `(SELECT AVG(stars) FROM Reviews WHERE Reviews.spotId = Spot.id)`
         ),
-        'avgRating',
+        "avgRating",
       ],
     ],
     include: [
@@ -163,8 +163,8 @@ router.get("/", validateQuery, async (req, res, next) => {
         attributes: [],
       },
     ],
-    order: [['id', 'DESC']],
-    group: ['Spot.id'],
+    order: [["id", "DESC"]],
+    group: ["Spot.id"],
     ...pagination,
   });
 
@@ -253,11 +253,11 @@ router.get("/:spotId", async (req, res, next) => {
   if (spot) {
     return res.status(200).json(spot);
   } else {
-    return res.json({ message: "Spot couldn't be found" });
+    return res.json({ message: "Spot couldn"t be found" });
   }
 });
 
-//Add an Image to a Spot based on the Spot's id
+//Add an Image to a Spot based on the Spot"s id
 router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   const { url, preview } = req.body;
   const user = req.user;
@@ -279,7 +279,7 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
       currentSpot.addSpotImage(spotImage);
       return res.status(200).json(outputSpotImage);
     } else return res.status(403).json({ message: "Forbidden!" });
-  } else return res.status(404).json({ message: "Spot couldn't be found!" });
+  } else return res.status(404).json({ message: "Spot couldn"t be found!" });
 });
 
 //Edit a Spot
@@ -321,7 +321,7 @@ router.put("/:spotId", requireAuth, validateSpot, async (req, res, next) => {
 
       return res.status(200).json(safeSpot);
     } else return res.status(403).json("Forbidden");
-  } else return res.status(404).json("Spot couldn't be found");
+  } else return res.status(404).json("Spot couldn"t be found");
 });
 
 //Delete spot by Id
@@ -337,7 +337,7 @@ router.delete("/:spotId", requireAuth, async (req, res, next) => {
 
       return res.status(200).json({ message: "Successfully deleted!" });
     } else return res.status(403).json({ message: "Forbidden!" });
-  } else return res.status(404).json({ message: "Spot couldn't be found!" });
+  } else return res.status(404).json({ message: "Spot couldn"t be found!" });
 });
 
 //Get all reviews by spotId
@@ -361,7 +361,7 @@ router.get("/:spotId/reviews", async (req, res, next) => {
   });
 
   if (reviews.length) return res.status(200).json(reviews);
-  else return res.status(404).json({ message: "Spot couldn't be found" });
+  else return res.status(404).json({ message: "Spot couldn"t be found" });
 });
 
 //Create review by spotId
@@ -396,7 +396,7 @@ router.post(
         return res
           .status(500)
           .json({ message: "User already has a review for this spot" });
-    } else return res.status(404).json({ message: "Spot couldn't be found" });
+    } else return res.status(404).json({ message: "Spot couldn"t be found" });
   }
 );
 
@@ -433,7 +433,7 @@ router.get("/:spotId/bookings", requireAuth, async (req, res) => {
       resultBookings.Bookings = notOwnerBookings;
       return res.status(200).json(resultBookings);
     }
-  } else return res.status(404).json({ message: "Spot couldn't be found" });
+  } else return res.status(404).json({ message: "Spot couldn"t be found" });
 });
 
 //Create a booking from spot based on spotId
@@ -449,7 +449,7 @@ router.post("/:spotId/bookings", requireAuth, async (req, res) => {
   // spot cant be found
   if (!spot) {
     res.statusCode = 404;
-    res.json({ message: "Spot coudn't be found" });
+    res.json({ message: "Spot coudn"t be found" });
   }
 
   // if spot owned by current user
@@ -529,7 +529,7 @@ router.delete("/:spotId/images/:imageId", requireAuth, async (req, res) => {
   const spot = await Spot.findByPk(spotId);
   const spotImage = await SpotImage.findByPk(imageId);
   if (!spotImage) {
-    return res.status(404).json({ message: "Spot Image couldn't be found" });
+    return res.status(404).json({ message: "Spot Image couldn"t be found" });
   }
   if (spot.ownerId !== userId) {
     return res.status(403).json({ message: "Forbidden" });
