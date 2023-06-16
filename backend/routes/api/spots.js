@@ -137,24 +137,24 @@ router.get("/", validateQuery, async (req, res, next) => {
   const spots = await Spot.findAll({
     where,
     attributes: [
-      "id",
-      "ownerId",
-      "address",
-      "city",
-      "state",
-      "country",
-      "lat",
-      "lng",
-      "name",
-      "description",
-      "price",
-      "createdAt",
-      "updatedAt",
+      'id',
+      'ownerId',
+      'address',
+      'city',
+      'state',
+      'country',
+      'lat',
+      'lng',
+      'name',
+      'description',
+      'price',
+      'createdAt',
+      'updatedAt',
       [
         sequelize.literal(
-          "(SELECT AVG(stars) FROM 'Reviews' WHERE 'Reviews'.'spotId' = 'Spot'.'id')"
+          '(SELECT AVG(stars) FROM "Reviews" WHERE "Reviews"."spotId" = "Spot"."id")'
         ),
-        "avgRating",
+        'avgRating',
       ],
     ],
     include: [
@@ -163,8 +163,8 @@ router.get("/", validateQuery, async (req, res, next) => {
         attributes: [],
       },
     ],
-    order: [["id", "DESC"]],
-    group: ["Spot.id"],
+    order: [['id', 'DESC']],
+    group: ['Spot.id'],
     ...pagination,
   });
 
