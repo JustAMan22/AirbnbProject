@@ -72,16 +72,16 @@ router.put("/:bookingId", requireAuth, async (req, res) => {
     });
   }
   let oldrealStartDate = new Date(booking.startDate);
-  let oldEndDatey = new Date(booking.endDate);
+  let oldEndDate = new Date(booking.endDate);
   let currentDate = new Date();
-  if (currentDate > oldEndDatey) {
+  if (currentDate > oldEndDate) {
     return res.status(403).json({ message: "Past bookings can't be modified" });
   }
   //If startDate and endDate conflict with existing bookings
   if (
-    realStartDate <= oldEndDatey &&
+    realStartDate <= oldEndDate &&
     realStartDate >= oldrealStartDate &&
-    realEndDate <= oldEndDatey &&
+    realEndDate <= oldEndDate &&
     realEndDate >= oldrealStartDate
   ) {
     return res.status(403).json({
@@ -93,20 +93,20 @@ router.put("/:bookingId", requireAuth, async (req, res) => {
     });
   }
   //If startDate conflicts with existing booking
-  else if (realStartDate <= oldEndDatey && realStartDate >= oldrealStartDate) {
+  else if (realStartDate <= oldEndDate && realStartDate >= oldrealStartDate) {
     return res.status(403).json({
       message: "Sorry, this spot is already booked for the specified dates",
       errors: { startDate: "Start Date conflicts with an existing booking" },
     });
   } //If endDate conflicts with existing booking
-  else if (realEndDate <= oldEndDatey && realEndDate >= oldrealStartDate) {
+  else if (realEndDate <= oldEndDate && realEndDate >= oldrealStartDate) {
     return res.status(403).json({
       message: "Sorry, this spot is already booked for the specified dates",
       errors: { endDate: "End Date conflicts with an existing booking" },
     });
   }
   //If booking is between new start and end date
-  else if (realStartDate < oldrealStartDate && realEndDate > oldEndDatey) {
+  else if (realStartDate < oldrealStartDate && realEndDate > oldEndDate) {
     return res.status(403).json({
       message: "Sorry, this spot is already booked for the specified dates",
       errors: {
