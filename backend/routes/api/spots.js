@@ -149,7 +149,7 @@ router.get("/", validateQuery, async (req, res, next) => {
       "description",
       "price",
       "createdAt",
-      "updatedAt,
+      "updatedAt",
       [
         sequelize.literal(
           `(SELECT AVG(stars) FROM Reviews WHERE Reviews.spotId = Spot.id)`
