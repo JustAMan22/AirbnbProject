@@ -136,37 +136,51 @@ router.get("/", validateQuery, async (req, res, next) => {
 
   const spots = await Spot.findAll({
     where,
-    attributes: [
-      "id",
-      "ownerId",
-      "address",
-      "city",
-      "state",
-      "country",
-      "lat",
-      "lng",
-      "name",
-      "description",
-      "price",
-      "createdAt",
-      "updatedAt",
-      [
-        sequelize.literal(
-          `(SELECT AVG(stars) FROM "Reviews" WHERE "Reviews".spotId = "Spot".id)`
-        ),
-        "avgRating",
-      ],
-    ],
-    include: [
-      {
-        model: Review,
-        attributes: [],
-      },
-    ],
     order: [["id", "DESC"]],
-    group: ["Spot.id"],
     ...pagination,
   });
+
+  for (const spot of spots) {
+    const previewImage = await SpotImage.findOne({
+      attributes: ["url"],
+      where: { spotId: spot.id, preview: true },
+    });
+    if (previewImage) {
+      spot.dataValues.previewImage = previewImage.dataValues.url;
+    }
+    const spotAvgRating = await Spot.findByPk(spot.id, {
+      include: [
+        {
+          model: Review,
+          attributes: [],
+        },
+      ],
+      attributes: [
+        "id",
+        "ownerId",
+        "address",
+        "city",
+        "state",
+        "country",
+        "lat",
+        "lng",
+        "name",
+        "description",
+        "price",
+        "createdAt",
+        "updatedAt",
+        [
+          sequelize.fn("ROUND", sequelize.fn("AVG", sequelize.col("stars")), 2),
+          "avgRating",
+        ],
+      ],
+      group: ["Spot.id"],
+    });
+
+    const avgRating = spotAvgRating.dataValues.avgRating;
+
+    if (spotAvgRating) spot.dataValues.avgRating = avgRating;
+  }
 
   return res.status(200).json({
     Spots: spots,
@@ -193,18 +207,7 @@ router.post("/", requireAuth, validateSpot, async (req, res, next) => {
     price,
   });
 
-  let safeSpot = {
-    address: spot.address,
-    city: spot.city,
-    state: spot.state,
-    country: spot.country,
-    lat: spot.lat,
-    lng: spot.lng,
-    name: spot.name,
-    description: spot.description,
-    price: spot.price,
-  };
-  return res.status(201).json(safeSpot);
+  return res.status(201).json(spot);
 });
 
 //Get details of a spot from :spotId
@@ -245,7 +248,10 @@ router.get("/:spotId", async (req, res, next) => {
       "createdAt",
       "updatedAt",
       [sequelize.fn("COUNT", sequelize.col("Reviews.id")), "numReviews"],
-      [sequelize.fn("AVG", sequelize.col("Reviews.stars")), "avgStarRating"],
+      [
+        sequelize.fn("ROUND", sequelize.fn("AVG", sequelize.col("stars")), 2),
+        "avgRating",
+      ],
     ],
     group: ["Spot.id", "Owner.id", "SpotImages.id"],
   });
@@ -304,22 +310,7 @@ router.put("/:spotId", requireAuth, validateSpot, async (req, res, next) => {
       currentSpot.price = price;
 
       await currentSpot.save();
-
-      let safeSpot = {
-        address: currentSpot.address,
-        city: currentSpot.city,
-        state: currentSpot.state,
-        country: currentSpot.country,
-        lat: currentSpot.lat,
-        lng: currentSpot.lng,
-        name: currentSpot.name,
-        description: currentSpot.description,
-        price: currentSpot.price,
-        createdAt: currentSpot.createdAt,
-        updatedAt: currentSpot.updatedAt,
-      };
-
-      return res.status(200).json(safeSpot);
+      return res.status(200).json(currentSpot);
     } else return res.status(403).json("Forbidden");
   } else return res.status(404).json("Spot couldn't be found");
 });

@@ -85,7 +85,6 @@ router.post("/signup", validateSignup, async (req, res) => {
 router.get("/:userId/spots", requireAuth, async (req, res, next) => {
   let userId = req.params.userId;
   let user = req.user;
-  let spotResults = {};
   const spots = await Spot.findAll({
     where: {
       ownerId: userId,
@@ -110,7 +109,10 @@ router.get("/:userId/spots", requireAuth, async (req, res, next) => {
       "price",
       "createdAt",
       "updatedAt",
-      [sequelize.fn("AVG", sequelize.col("stars")), "avgRating"],
+      [
+        sequelize.fn("ROUND", sequelize.fn("AVG", sequelize.col("stars")), 2),
+        "avgRating",
+      ],
     ],
     group: ["Spot.id"],
   });
@@ -125,9 +127,8 @@ router.get("/:userId/spots", requireAuth, async (req, res, next) => {
     }
   }
 
-  spotResults.spots = spots;
   if (parseInt(user.id) === parseInt(userId)) {
-    return res.status(200).json(spotResults);
+    return res.status(200).json({ Spot: spots });
   } else return res.status(403).json({ message: "Forbidden!" });
 });
 
