@@ -101,43 +101,55 @@ const validateQuery = [
 router.get("/", validateQuery, async (req, res, next) => {
   let { page, size, minPrice, maxPrice, minLat, maxLat, minLng, maxLng } =
     req.query;
+
   if (!page) page = 1;
   if (!size) size = 20;
-  if (page > 10) page = 1;
+  if (page > 10) size = 1;
   if (size > 20) size = 20;
   page = parseInt(page);
   size = parseInt(size);
+  let pag = {};
 
-  let pagination = {
-    limit: size,
-    offset: size * (page - 1),
-  };
+  if (page !== 0 && size !== 0) {
+    pag.limit = size;
+    pag.offset = size * (page - 1);
+  }
 
   const where = {};
-
   if (minPrice) {
     where.price = { [Op.gte]: minPrice };
   }
+
   if (maxPrice) {
     where.price = { ...where.price, [Op.lte]: maxPrice };
   }
-  if (maxLat) {
-    where.lat = { ...where.lat, [Op.lte]: maxLat };
-  }
+
   if (minLat) {
     where.lat = { [Op.gte]: minLat };
   }
-  if (maxLng) {
-    where.lng = { ...where.lng, [Op.lte]: maxLng };
+
+  if (maxLat) {
+    where.lat = { ...where.lat, [Op.lte]: maxLat };
   }
+
   if (minLng) {
     where.lng = { [Op.gte]: minLng };
   }
 
+  if (maxLng) {
+    where.lng = { ...where.lng, [Op.lte]: maxLng };
+  }
+
+  let results = {};
   const spots = await Spot.findAll({
+    include: [
+      {
+        model: Review,
+        attributes: [],
+      },
+    ],
     where,
-    order: [["id", "DESC"]],
-    ...pagination,
+    ...pag,
   });
 
   for (const spot of spots) {
@@ -148,7 +160,8 @@ router.get("/", validateQuery, async (req, res, next) => {
     if (previewImage) {
       spot.dataValues.previewImage = previewImage.dataValues.url;
     }
-    const spotAvgRating = await Spot.findByPk(spot.id, {
+
+    const spotRating = await Spot.findByPk(spot.id, {
       include: [
         {
           model: Review,
@@ -176,16 +189,16 @@ router.get("/", validateQuery, async (req, res, next) => {
       ],
       group: ["Spot.id"],
     });
+    const avgRating = spotRating.dataValues.avgRating;
 
-    const avgRating = spotAvgRating.dataValues.avgRating;
-
-    if (spotAvgRating) spot.dataValues.avgRating = avgRating;
+    if (spotRating) spot.dataValues.avgRating = avgRating;
   }
 
-  return res.status(200).json({
+  results.Spots = spots;
+  res.status(200).json({
     Spots: spots,
-    page: parseInt(page),
-    size: parseInt(size),
+    page: page,
+    size: size,
   });
 });
 
@@ -259,7 +272,7 @@ router.get("/:spotId", async (req, res, next) => {
   if (spot) {
     return res.status(200).json(spot);
   } else {
-    return res.json({ message: "Spot couldn't be found" });
+    return res.status(404).json({ message: "Spot couldn't be found" });
   }
 });
 
@@ -402,10 +415,12 @@ router.get("/:spotId/bookings", requireAuth, async (req, res) => {
     where: {
       spotId: spotId,
     },
-    include: {
-      model: User,
-      attributes: ["id", "firstName", "lastName"],
-    },
+    include: [
+      {
+        model: User,
+        attributes: ["id", "firstName", "lastName"],
+      },
+    ],
   });
 
   const notOwnerBookings = await Booking.findAll({
