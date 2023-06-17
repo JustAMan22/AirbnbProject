@@ -351,7 +351,7 @@ router.get("/:spotId/reviews", async (req, res, next) => {
     ],
   });
 
-  if (reviews.length) return res.status(200).json(reviews);
+  if (reviews.length) return res.status(200).json({ Reviews: reviews });
   else return res.status(404).json({ message: "Spot couldn't be found" });
 });
 
@@ -395,7 +395,6 @@ router.post(
 router.get("/:spotId/bookings", requireAuth, async (req, res) => {
   const spotId = req.params.spotId;
   const user = req.user;
-  let resultBookings = {};
 
   const currentSpot = await Spot.findByPk(spotId);
 
@@ -418,11 +417,9 @@ router.get("/:spotId/bookings", requireAuth, async (req, res) => {
 
   if (currentSpot) {
     if (user.id === currentSpot.ownerId) {
-      resultBookings.Bookings = bookings;
-      return res.status(200).json(resultBookings);
+      return res.status(200).json({ Bookings: bookings });
     } else {
-      resultBookings.Bookings = notOwnerBookings;
-      return res.status(200).json(resultBookings);
+      return res.status(200).json({ Bookings: notOwnerBookings });
     }
   } else return res.status(404).json({ message: "Spot couldn't be found" });
 });

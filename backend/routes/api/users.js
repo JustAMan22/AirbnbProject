@@ -81,7 +81,7 @@ router.post("/signup", validateSignup, async (req, res) => {
   });
 });
 
-//Get all spots from current :userId
+//Get all spots from current user
 router.get("/:userId/spots", requireAuth, async (req, res, next) => {
   let userId = req.params.userId;
   let user = req.user;
@@ -128,11 +128,11 @@ router.get("/:userId/spots", requireAuth, async (req, res, next) => {
   }
 
   if (parseInt(user.id) === parseInt(userId)) {
-    return res.status(200).json({ Spot: spots });
+    return res.status(200).json({ Spots: spots });
   } else return res.status(403).json({ message: "Forbidden!" });
 });
 
-//Get all reviews by userId
+//Get all reviews of current user
 router.get("/:userId/reviews", requireAuth, async (req, res, next) => {
   let userId = req.params.userId;
   const reviews = await Review.findAll({
@@ -177,13 +177,12 @@ router.get("/:userId/reviews", requireAuth, async (req, res, next) => {
     }
   }
 
-  return res.status(200).json(reviews);
+  return res.status(200).json({ Reviews: reviews });
 });
 
 //Get all bookings of current user
 router.get("/:userId/bookings", requireAuth, async (req, res) => {
   let userId = req.params.userId;
-  let bookingsResult = {};
   const bookings = await Booking.findAll({
     where: {
       userId: userId,
@@ -218,9 +217,7 @@ router.get("/:userId/bookings", requireAuth, async (req, res) => {
     }
   }
 
-  bookingsResult.Bookings = bookings;
-
-  return res.status(200).json(bookingsResult);
+  return res.status(200).json({ Bookings: bookings });
 });
 
 module.exports = router;
